@@ -1,0 +1,65 @@
+Mongo Atlas Login:
+Email:mohamedzuhairka@gmail.com
+Password:MonRkd111
+-----------------------------
+Mongo Cluster url:https://cloud.mongodb.com/v2/619e1e4d0b9c1f3b304dbaa7#clusters
+-----------------------------
+Mongo Atlas Database User:
+Username:mohamedzuhair
+Password:mernmongopass
+-----------------------------
+Network Access:
+IP address:157.49.208.141
+-----------------------------
+Controller Folder:
+Writing all functions and logics
+Routes Folder:
+Writing all routes and combine appropriate functions from Controller folder
+-----------------------------
+Google OAuth Process:
+    1)Go to 'https://console.developers.google.com/apis/credentials'
+    2)Before that you want to login with your gmail 
+    3)Go to OAuth consent screen and create new project
+    4)After that,click external 
+    5)Give your application name and email id
+    6)Skip next three and continue
+    6)After creating OAuth consent screen,go to 'credentials'
+    7)In application type,click Web application
+    8)Create it and download json file(It has client id and client session)
+https://console.cloud.google.com/apis/credentials?project=ace-memento-333610&supportedpurview=project
+Go to this link with email id(mohamedzuhairka@gmail.com) and check how it created.
+
+    Client ID:777662825949-8en4qu96thnh4cbsc4k7cvlie3falp70.apps.googleusercontent.com(Use this in Code)
+    If some error happens, go to "https://youtu.be/LKlO8vLvUao" time:'50:00' to '1:00:00'
+
+Syntax:
+
+   <GoogleLogin
+            clientId="777662825949-8en4qu96thnh4cbsc4k7cvlie3falp70.apps.googleusercontent.com"
+            render={(renderProps) => (
+              <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained">
+                Google Sign In
+              </Button>
+            )}
+            onSuccess={googleSuccess}
+            onFailure={googleError}
+            cookiePolicy="single_host_origin"
+          />
+ const googleSuccess = async (res) => {
+    console.log(res);
+    const result = res?.profileObj; //If res object is not present,this will not throw error because we use ?
+    const token = res?.tokenId; //If res object is not present,this will not throw error because we use ?
+
+    try { //Since we working with async,we use try/catch
+      dispatch({ type: AUTH, data: { result, token } });
+
+      history('/');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const googleError = (error) => alert('Google Sign In was unsuccessful. Try again later');
+-----------------------------
+ req.headers.authorization=`Bearer ${JSON.parse(localStorage.getItem('profile')).token}`;
+ Don't put 'A' use 'a' in authorization.
