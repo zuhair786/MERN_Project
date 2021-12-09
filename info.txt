@@ -63,3 +63,43 @@ Syntax:
 -----------------------------
  req.headers.authorization=`Bearer ${JSON.parse(localStorage.getItem('profile')).token}`;
  Don't put 'A' use 'a' in authorization.
+-----------------------------
+ import {Pagination,PaginationItem} from '@material-ui/lab';
+ This components are still in experimental features so import from lab.
+-----------------------------
+<TextField name="search" variant="outlined" fullWidth label="Search Memories" value={search} onChange={(e)=>{setSearch(e.target.value)}} onKeyPress={handleKeyPress}/>
+const handleKeyPress=(e)=>{
+      if(e.keyCode===13){//Pressed Enter Key
+
+      }
+    }
+-----------------------------
+In Home.js,
+     dispatch(getPostBySearch({search,tags:tags.join(',')}))
+     Here,tags is array.In url,we cannot able to pass array.So,we join array using delimeter ','.
+-----------------------------
+QUERY=> '/posts?page=1'
+PARAMS=> '/posts/:id'
+-----------------------------
+Syntax:
+    const title=new RegExp(searchQuery,'i');
+Here first is data,second is flag
+i stands for ignorecase
+-----------------------------
+The $or operator will match either of the condition with the documents. It does not matter if all the conditions match or not. The only condition matching the document is enough with the $or operator. 
+The value of the $in operator is an array that contains few values. The document will be matched where the value of the breed field matches any one of the values inside the array.
+Syntax:
+    const posts=await postMessage.find({$or:[{title},{tags:{$in:tags.split(',')}}]})
+-----------------------------
+In server/controller/posts.js/getPosts():
+Syntax:
+        const LIMIT=8;
+        const startIndex=LIMIT*(Number(page)-1); //Start Index of every page example:if page is 3,the startindex is (8*(3-1))=16.Subtracting 1 because index starts from 0.
+        const total=await PostMessage.countDocuments({}); //Total documents in a collection.We pass {} because we did not want to filter based on any property.
+        
+        const posts = await PostMessage.find().sort({_id:-1}).limit(LIMIT).skip(startIndex);
+
+        Here sort({_id:-1}):New documents will show first.
+             limit(LIMIT):selete first 8 documents only.
+             skip(startIndex):skip first LIMIT*(Number(page)-1) documents.
+-----------------------------

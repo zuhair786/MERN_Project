@@ -6,10 +6,16 @@ import PostMessage from '../models/postMessage.js';
 const router = express.Router();
 
 export const getPosts = async (req, res) => { 
+    const {page}=req.query;
+    //console.log(page);
     try {
-        const postMessages = await PostMessage.find();
+        const LIMIT=8;
+        const startIndex=LIMIT*(Number(page)-1); //Start Index of every page example:if page is 3,the startindex is (8*(3-1))=16.Subtracting 1 because index starts from 0.
+        const total=await PostMessage.countDocuments({}); //Total documents in a collection.We pass {} because we did not want to filter based on any property.
+        
+        const posts = await PostMessage.find().sort({_id:-1}).limit(LIMIT).skip(startIndex);
                 
-        res.status(200).json(postMessages);
+        res.status(200).json({data:posts,currentPage:Number(page),numberOfPages:Math.ceil(total/LIMIT)});
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
@@ -64,6 +70,9 @@ export const deletePost = async (req, res) => {
     res.json({ message: "Post deleted successfully." });
 }
 
+//QUERY=> '/posts?page=1'
+//PARAMS=> '/posts/:id'
+
 export const likePost = async (req, res) => {
     const { id } = req.params;
 
@@ -75,14 +84,62 @@ export const likePost = async (req, res) => {
     
     const post = await PostMessage.findById(id);
 
-    if (post.likes.indexOf(String(req.userId))===-1) {
+    const index = post.likes.findIndex((id) => id ===String(req.userId));
+
+    if (index === -1) {
       post.likes.push(req.userId);
     } else {
       post.likes = post.likes.filter((id) => id !== String(req.userId));
     }
+
     const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+
     res.status(200).json(updatedPost);
 }
 
+//QUERY=> '/posts?page=1'
+//PARAMS=> '/posts/:id'
+
+export const getPostsBySearch = async (req, res) => {
+    const { searchQuery, tags } = req.query;
+
+    try {
+        const title = new RegExp(searchQuery, "i");
+
+        const posts = await PostMessage.find({ $or: [ { title }, { tags: { $in: tags.split(',') } } ]});
+
+        res.json({ data: posts });
+    } catch (error) {    
+        res.status(404).json({ message: error.message });
+    }
+}
+
+export const commentPost = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+    try{
+    const post = await PostMessage.findById(id);
+
+    post.comments.push(value);
+
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+
+    res.json(updatedPost);
+    }catch(err){
+        res.status(500).json({message:err.message});
+    }
+}
+
+export const getPostsByCreator = async (req, res) => {
+    const { name } = req.query;
+
+    try {
+        const posts = await PostMessage.find({ name });
+
+        res.json({ data: posts });
+    } catch (error) {    
+        res.status(404).json({ message: error.message });
+    }
+}
 
 export default router;
